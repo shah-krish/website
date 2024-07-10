@@ -15,6 +15,10 @@ class Room(models.Model):
     #participants
     updated = models.DateTimeField(auto_now=True) #each time save is called, take time stamp
     created = models.DateTimeField(auto_now_add=True) #only takes time stamp when first instance created
+
+    class Meta:
+        ordering = ['-updated','-created'] #- means descending
+
     def __str__(self):
         return self.name
 
