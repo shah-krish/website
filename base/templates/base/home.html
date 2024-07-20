@@ -1,11 +1,29 @@
 {% extends 'main.html' %}
 
   {% block content %}
-<h1>HOME</h1>
+<style>
+  .home-container{
+    display: grid;
+    grid-template-columns: 1fr 3fr; #1/3
+  }
+</style>
 
-<div>
-  <a href = '{% url "create-room"  %}'>create-room</a>
-  <hr>
+<div class = 'home-container'>
+  <div>
+    <h3>Browse Topics</h3>
+    <hr>
+    <div>
+      <a href ="{% url 'home' %}">All</a>
+    </div>
+    {% for topic in topics %}
+    <div>
+      <a href="{% url 'home' %}?q={{topic.name}}">{{topic}}</a> <!-- we can use query to filter data to display -->
+    </div>
+    {% endfor %}
+  </div>
+  <div>
+    <h5>{{room_count}} rooms available</h5>
+    <a href = '{% url "create-room"  %}'>create-room</a>
   <div>
     {% for room in rooms %}
     <div>
@@ -18,6 +36,7 @@
       <hr>
     </div>
     {% endfor %}
+  </div>
   </div>
 </div>
 
