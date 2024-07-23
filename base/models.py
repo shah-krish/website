@@ -12,7 +12,7 @@ class Room(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL,null = True) #wont delete room if topic is deleted
     name = models.CharField(max_length=200)
     description = models.TextField(null=True,blank= True) #can be blank
-    #participants
+    participants = models.ManyToManyField(User, related_name="participants", blank=True)
     updated = models.DateTimeField(auto_now=True) #each time save is called, take time stamp
     created = models.DateTimeField(auto_now_add=True) #only takes time stamp when first instance created
 
@@ -28,6 +28,8 @@ class Message(models.Model):
     body = models.TextField()
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        ordering = ['-updated','-created'] #- means descending
     def __str__(self):
         return self.body[0:50] #only first 50 characters displayed to avoid clutter
 
