@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -107,19 +108,26 @@ def userProfile(request,pk):
 def createRoom(request):
     form = RoomForm()
     topics = Topic.objects.all()
+
     if request.method == "POST":
         topic_name = request.POST.get('topic')
-        topic,created = Topic.objects.get_or_create(name=topic_name)
+        topic, created = Topic.objects.get_or_create(name=topic_name)
 
-        Room.objects.create(
+        room = Room(
             host=request.user,
-            topic = topic,
-            name = request.POST.get('name'),
-            description = request.POST.get('description')
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description')
         )
-        return redirect('home')
-    context = {'form':form,'topics':topics}
-    return render(request,'base/room_form.html',context)
+        try:
+            room.save()
+            return redirect('home')
+        except IntegrityError as e:
+            # Handle the integrity error, e.g., duplicate room name
+            form.add_error(None, 'An error occurred: {}'.format(str(e)))
+
+    context = {'form': form, 'topics': topics}
+    return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
 def updateRoom(request,pk):
